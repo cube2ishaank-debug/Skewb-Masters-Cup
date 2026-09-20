@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skewb Masters Cup</title>
+<link rel="icon" type="image/png" href="images/smc_logo.png">
+<link rel="apple-touch-icon" href="images/smc_logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #f5f6ee;
+  --bg2:     #eceee0;
+  --surface: #ffffff;
+  --blue:    #1a56db;
+  --blue2:   #2563eb;
+  --blue3:   #3b82f6;
+  --accent:  #0ea5e9;
+  --gold:    #f5b800;
+  --gold2:   #e6a800;
+  --gold3:   #ffd340;
+  --golddim: rgba(245,184,0,0.15);
+  --deep:    #0f2057;
+  --text:    #0f1f4b;
+  --muted:   #4b6080;
+  --border:  rgba(26,86,219,0.14);
+  --gborder: rgba(245,184,0,0.35);
+  --card:    rgba(255,255,255,0.93);
+  --shadow:  0 4px 24px rgba(26,86,219,0.09);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Rajdhani',sans-serif;font-size:17px;overflow-x:hidden}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* PROGRESS BAR */
+#progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--blue),var(--gold));z-index:999;width:0%;transition:width 0.1s linear;pointer-events:none}
+
+/* BG BLOBS */
+.bg-blobs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:0.30;animation:drift var(--d,20s) ease-in-out infinite alternate}
+.b1{width:560px;height:560px;background:#c7d9ff;top:-140px;left:-120px;--d:22s}
+.b2{width:440px;height:440px;background:#fff3b0;top:38%;right:-100px;--d:27s;animation-delay:-9s}
+.b3{width:340px;height:340px;background:#dbeafe;bottom:6%;left:15%;--d:19s;animation-delay:-5s}
+.b4{width:260px;height:260px;background:#ffe066;bottom:20%;right:20%;--d:24s;animation-delay:-13s;opacity:0.18}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(36px,28px) scale(1.07)}}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:0 48px;height:66px;display:flex;align-items:center;justify-content:space-between;background:rgba(245,246,238,0.88);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:box-shadow 0.3s}
+nav.scrolled{box-shadow:0 2px 24px rgba(26,86,219,0.10)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;color:var(--blue);text-decoration:none;cursor:pointer;display:flex;align-items:center;gap:10px}
+.nav-logo .logo-badge{background:var(--gold);color:var(--deep);font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:2px;padding:3px 8px;border-radius:4px;font-weight:500}
+.nav-links{display:flex;gap:4px;align-items:center}
+.nav-links a{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:6px 14px;border-radius:6px;transition:all 0.2s;cursor:pointer}
+.nav-links a:hover{color:var(--blue);background:rgba(26,86,219,0.07)}
+.nav-links a.active{color:var(--blue);background:rgba(26,86,219,0.10)}
+.nav-links .reg{background:var(--gold);color:var(--deep);font-weight:700;padding:8px 20px;border-radius:6px;border:none;letter-spacing:1px}
+.nav-links .reg:hover{background:var(--gold2);transform:translateY(-1px);box-shadow:0 4px 18px rgba(245,184,0,0.45)}
+
+/* HAMBURGER TOGGLE FOR MOBILE */
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;flex-direction:column;gap:5px;padding:8px;z-index:210}
+.nav-toggle .bar{width:24px;height:2px;background:var(--deep);border-radius:2px;transition:all 0.3s ease}
+.nav-toggle.open .bar:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.nav-toggle.open .bar:nth-child(2){opacity:0}
+.nav-toggle.open .bar:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+/* PAGES */
+.page{display:none}.page.active{display:block}
+
+/* HERO */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px}
+.hero-logo-container{margin-bottom:20px;display:flex;justify-content:center;animation:fadeUp 0.7s ease forwards 0.1s;opacity:0}
+.hero-logo-img{width:110px;height:110px;border-radius:50%;object-fit:cover;border:3.5px solid var(--gold);box-shadow:0 12px 36px rgba(26,86,219,0.2),0 0 20px rgba(245,184,0,0.3);transition:transform 0.4s ease,box-shadow 0.4s ease}
+.hero-logo-img:hover{transform:scale(1.08) rotate(5deg);box-shadow:0 18px 48px rgba(245,184,0,0.45)}
+.hero-badge{display:inline-flex;align-items:center;gap:9px;background:rgba(245,184,0,0.13);border:1.5px solid rgba(245,184,0,0.45);border-radius:100px;padding:7px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:36px;animation:fadeUp 0.7s ease forwards 0.2s;opacity:0}
+.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);animation:bdot 2s ease infinite}
+@keyframes bdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(1.5)}}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(72px,14vw,155px);line-height:0.86;letter-spacing:3px;margin-bottom:6px;animation:fadeUp 0.8s ease forwards 0.4s;opacity:0}
+.hero-title .l1{display:block;color:var(--deep)}
+.hero-title .l2{display:block;color:var(--blue);position:relative;padding-bottom:12px}
+.hero-title .l2::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:55%;height:4px;background:var(--gold);border-radius:2px}
+.hero-title .l3{display:block;color:var(--deep);margin-top:8px}
+.hero-sub{font-size:19px;font-weight:500;color:var(--muted);max-width:580px;line-height:1.65;margin:36px auto 52px;animation:fadeUp 0.8s ease forwards 0.6s;opacity:0}
+.hero-sub strong{color:var(--blue);font-weight:700}
+.hero-cta{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;animation:fadeUp 0.8s ease forwards 0.8s;opacity:0}
+.btn-p{display:inline-block;background:var(--gold);color:var(--deep);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;text-transform:uppercase;padding:14px 38px;border-radius:8px;text-decoration:none;cursor:pointer;transition:all 0.22s;border:none}
+.btn-p:hover{background:var(--gold2);transform:translateY(-2px);box-shadow:0 8px 28px rgba(245,184,0,0.4)}
+.btn-g{display:inline-block;background:var(--surface);color:var(--blue);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:1.5px;text-transform:uppercase;padding:13px 38px;border-radius:8px;text-decoration:none;cursor:pointer;border:2px solid var(--border);transition:all 0.22s}
+.btn-g:hover{border-color:var(--blue);background:rgba(26,86,219,0.05);transform:translateY(-2px)}
+.hero-stats{display:flex;gap:44px;justify-content:center;flex-wrap:wrap;margin-top:68px;animation:fadeUp 0.8s ease forwards 1.0s;opacity:0}
+.h-stat .val{font-family:'Bebas Neue',sans-serif;font-size:44px;color:var(--blue);line-height:1}
+.h-stat .lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.stat-div{width:1px;background:var(--border);align-self:stretch}
+.scroll-hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeIn 1s ease forwards 1.4s;opacity:0}
+.scroll-hint span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase}
+.scroll-arrow{width:20px;height:20px;border-right:2px solid var(--gold);border-bottom:2px solid var(--gold);transform:rotate(45deg);animation:sarrow 2s ease infinite}
+@keyframes sarrow{0%,100%{transform:rotate(45deg) translateY(0)}50%{transform:rotate(45deg) translateY(7px)}}
+
+/* SECTIONS */
+.section{position:relative;z-index:1;padding:100px 24px;max-width:1100px;margin:0 auto}
+.sec-label{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--gold2);margin-bottom:14px;display:block}
+.sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,5.5vw,70px);letter-spacing:1px;line-height:1;margin-bottom:52px;color:var(--deep)}
+.sec-title .hl{color:var(--blue)}
+.sec-title .hy{color:var(--gold2)}
+
+/* FORMAT CARDS */
+.format-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px}
+.fmt-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:38px 30px;box-shadow:var(--shadow);transition:transform 0.32s cubic-bezier(0.23,1,0.32,1),box-shadow 0.32s,border-color 0.32s;position:relative;overflow:hidden}
+.fmt-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold));opacity:0;transition:opacity 0.3s}
+.fmt-card:hover{transform:translateY(-7px);box-shadow:0 14px 44px rgba(26,86,219,0.14);border-color:rgba(26,86,219,0.28)}
+.fmt-card:hover::before{opacity:1}
+.fmt-card .num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:var(--gold);line-height:1;margin-bottom:8px}
+.fmt-card h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;margin-bottom:10px;color:var(--deep)}
+.fmt-card p{color:var(--muted);font-size:15px;line-height:1.65;font-weight:500}
+
+/* MISSION */
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mc{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:34px;box-shadow:var(--shadow);transition:transform 0.32s cubic-bezier(0.23,1,0.32,1),box-shadow 0.32s;position:relative;overflow:hidden}
+.mc::after{content:'';position:absolute;bottom:0;right:0;width:80px;height:80px;background:radial-gradient(circle,var(--golddim),transparent 70%);pointer-events:none}
+.mc:hover{transform:translateY(-5px);box-shadow:0 12px 40px rgba(26,86,219,0.12)}
+.mc-lbl{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gold2);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.mc-lbl::before{content:'';width:18px;height:2px;background:var(--gold);display:inline-block;border-radius:1px}
+.mc p{color:var(--muted);line-height:1.7;font-weight:500;font-size:15px}
+
+/* DIVIDER / GOLD BAR */
+.divider{position:relative;z-index:1;width:100%;max-width:1100px;margin:0 auto;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+.gold-bar{position:relative;z-index:1;height:4px;background:linear-gradient(90deg,var(--blue),var(--gold),var(--blue))}
+
+/* CONTACT STRIP */
+.contact-strip{position:relative;z-index:1;background:linear-gradient(135deg,var(--deep) 0%,#1a3a8f 60%,#0a2060 100%);padding:88px 24px;text-align:center;overflow:hidden}
+.contact-strip::before{content:'';position:absolute;top:-60px;right:-60px;width:300px;height:300px;background:rgba(245,184,0,0.07);border-radius:50%;pointer-events:none}
+.contact-strip::after{content:'';position:absolute;bottom:-80px;left:5%;width:240px;height:240px;background:rgba(245,184,0,0.05);border-radius:50%;pointer-events:none}
+.contact-strip h2{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:3px;color:#fff;margin-bottom:14px}
+.contact-strip p{color:rgba(255,255,255,0.7);margin-bottom:32px;font-size:16px;font-weight:500}
+.contact-links{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+.contact-links a{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;text-decoration:none;font-family:'JetBrains Mono',monospace;font-size:12px;padding:12px 24px;border-radius:8px;transition:all 0.22s;letter-spacing:1px}
+.contact-links a:hover{background:rgba(245,184,0,0.22);border-color:rgba(245,184,0,0.55);color:var(--gold3);transform:translateY(-2px)}
+
+/* PAGE HEADER */
+.page-header{padding:136px 24px 60px;text-align:center;position:relative;z-index:1}
+.page-header .sec-title{margin-bottom:14px}
+.page-header > p{color:var(--muted);font-size:16px;font-weight:500;max-width:500px;margin:0 auto}
+
+/* TEAM */
+.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;max-width:1100px;margin:0 auto 100px;padding:0 24px;position:relative;z-index:1}
+.team-card{background:var(--card);border:1.5px solid var(--border);border-radius:18px;padding:38px 34px;box-shadow:var(--shadow);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1),box-shadow 0.35s,border-color 0.35s;position:relative;overflow:hidden}
+.team-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--gold),var(--blue));opacity:0;transition:opacity 0.3s;border-radius:18px 18px 0 0}
+.team-card:hover{transform:translateY(-8px);box-shadow:0 18px 52px rgba(26,86,219,0.15);border-color:rgba(245,184,0,0.38)}
+.team-card:hover::before{opacity:1}
+/* Avatar: fallback div sits behind, img sits on top */
+.t-avatar{width:92px;height:92px;border-radius:50%;margin-bottom:22px;border:3px solid var(--gborder);transition:border-color 0.3s;flex-shrink:0;position:relative;display:block}
+.team-card:hover .t-avatar{border-color:var(--gold)}
+.t-av-bg{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:30px;color:#fff;position:absolute;inset:0}
+.t-av-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;position:absolute;inset:0;opacity:0;transition:opacity 0.4s}
+.t-av-img.loaded{opacity:1}
+.t-role{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:5px}
+.t-name{font-family:'Bebas Neue',sans-serif;font-size:27px;letter-spacing:1.5px;color:var(--deep);margin-bottom:4px}
+.t-desc{font-size:14px;color:var(--muted);line-height:1.6;font-weight:500;margin-top:10px}
+.t-links{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.t-link{display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--blue);text-decoration:none;padding:8px 14px;border:1.5px solid rgba(26,86,219,0.2);border-radius:7px;background:rgba(26,86,219,0.04);transition:all 0.22s}
+.t-link:hover{background:var(--gold);color:var(--deep);border-color:var(--gold)}
+.t-link.yt:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+
+/* RESOURCES */
+.res-layout{max-width:900px;margin:0 auto;padding:0 24px 100px;position:relative;z-index:1}
+.res-tabs{display:flex;gap:4px;margin-bottom:36px;background:var(--surface);border:1.5px solid var(--border);padding:5px;border-radius:12px;overflow-x:auto}
+.tab-btn{flex:1;min-width:fit-content;padding:10px 20px;background:transparent;border:none;color:var(--muted);font-family:'Rajdhani',sans-serif;font-weight:600;font-size:13px;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;border-radius:8px;transition:all 0.22s;white-space:nowrap}
+.tab-btn:hover{color:var(--blue)}
+.tab-btn.active{background:var(--gold);color:var(--deep)}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.rule-block{background:var(--card);border:1.5px solid var(--border);border-left:4px solid var(--blue);border-radius:0 12px 12px 0;padding:30px 34px;margin-bottom:16px;box-shadow:var(--shadow)}
+.rule-block.gold{border-left-color:var(--gold)}
+.rule-block h3{font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:2px;color:var(--blue);margin-bottom:13px}
+.rule-block.gold h3{color:var(--gold2)}
+.rule-block p{color:var(--muted);font-size:15px;line-height:1.7;font-weight:500}
+.rule-block ul{list-style:none;margin-top:12px}
+.rule-block ul li{color:var(--muted);font-size:15px;line-height:1.7;font-weight:500;padding-left:22px;position:relative;margin-bottom:6px}
+.rule-block ul li::before{content:'▸';position:absolute;left:0;color:var(--gold);font-size:11px;top:4px}
+.note-box{background:rgba(239,68,68,0.06);border:1.5px solid rgba(239,68,68,0.18);border-left:4px solid #ef4444;border-radius:0 8px 8px 0;padding:14px 20px;margin-top:12px}
+.note-box p{color:#dc2626;font-size:14px;font-weight:600}
+
+/* YOUTUBE */
+.yt-section{max-width:820px;margin:0 auto;padding:0 24px 100px;text-align:center;position:relative;z-index:1}
+.yt-hero{background:linear-gradient(135deg,var(--deep) 0%,#1a3a8f 60%,#0a2060 100%);border-radius:20px;padding:68px 44px;margin-bottom:44px;color:#fff;box-shadow:0 20px 56px rgba(15,32,87,0.3);position:relative;overflow:hidden;transition:transform 0.32s}
+.yt-hero::before{content:'';position:absolute;top:-60px;right:-60px;width:260px;height:260px;background:rgba(245,184,0,0.08);border-radius:50%}
+.yt-hero::after{content:'';position:absolute;bottom:-80px;left:8%;width:200px;height:200px;background:rgba(59,130,246,0.10);border-radius:50%}
+.yt-hero:hover{transform:translateY(-5px)}
+.yt-icon-wrap{width:72px;height:72px;background:var(--surface);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 22px;position:relative;z-index:1;padding:6px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.2)}
+.yt-icon-wrap img{width:100%;height:100%;object-fit:contain;border-radius:50%}
+.yt-hero h2{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:3px;margin-bottom:14px;position:relative;z-index:1}
+.yt-hero p{color:rgba(255,255,255,0.82);font-size:16px;line-height:1.65;max-width:520px;margin:0 auto 34px;font-weight:500;position:relative;z-index:1}
+.btn-yt{display:inline-block;background:var(--gold);color:var(--deep);font-family:'Rajdhani',sans-serif;font-weight:700;font-size:15px;letter-spacing:2px;text-transform:uppercase;padding:14px 38px;border-radius:8px;text-decoration:none;transition:all 0.22s;position:relative;z-index:1}
+.btn-yt:hover{background:var(--gold3);transform:translateY(-2px);box-shadow:0 6px 24px rgba(245,184,0,0.4)}
+.ch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(185px,1fr));gap:14px;text-align:center}
+.ch-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:26px 18px;text-decoration:none;transition:transform 0.28s cubic-bezier(0.23,1,0.32,1),box-shadow 0.28s,border-color 0.28s;display:block;box-shadow:var(--shadow)}
+.ch-card:hover{transform:translateY(-5px);box-shadow:0 12px 36px rgba(26,86,219,0.13);border-color:var(--gborder)}
+.ch-av{width:54px;height:54px;border-radius:50%;margin:0 auto 13px;position:relative;overflow:hidden}
+.ch-av-bg{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;position:absolute;inset:0}
+.ch-av-img{width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;position:absolute;inset:0;opacity:0;transition:opacity 0.4s}
+.ch-av-img.loaded{opacity:1}
+.ch-card strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;color:var(--deep);margin-bottom:4px}
+.ch-card span{font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* SPONSOR STRIP (home page) */
+.sponsor-strip{background:var(--card);border:1.5px solid var(--gborder);border-radius:16px;padding:40px 44px;display:flex;align-items:center;gap:32px;box-shadow:var(--shadow);flex-wrap:wrap}
+.sponsor-mark{width:76px;height:76px;border-radius:14px;background:#ffffff;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid var(--gborder);padding:6px;overflow:hidden}
+.sponsor-mark img{width:100%;height:100%;object-fit:contain;border-radius:8px}
+.sponsor-body{flex:1;min-width:220px}
+.sponsor-body .mc-lbl{margin-bottom:8px}
+.sponsor-body h3{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:1.5px;color:var(--deep);margin-bottom:8px}
+.sponsor-body p{color:var(--muted);font-weight:500;line-height:1.65;font-size:15px;max-width:520px}
+.sponsor-cta{flex-shrink:0}
+
+/* PRIZE CARDS (sponsor page) */
+.prize-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:16px}
+.prize-card{background:var(--card);border:1.5px solid var(--border);border-radius:14px;padding:34px 28px;box-shadow:var(--shadow);text-align:center;transition:transform 0.32s cubic-bezier(0.23,1,0.32,1),box-shadow 0.32s,border-color 0.32s}
+.prize-card:hover{transform:translateY(-7px);box-shadow:0 14px 44px rgba(26,86,219,0.14);border-color:var(--gborder)}
+.prize-card .place{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold2);margin-bottom:10px}
+.prize-card .amt{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--blue);line-height:1;margin-bottom:6px}
+.prize-card p{color:var(--muted);font-size:14px;font-weight:500}
+.prize-card.first{border-color:var(--gborder);background:linear-gradient(180deg,rgba(245,184,0,0.07),var(--card) 55%)}
+.prize-card.first .amt{color:var(--gold2)}
+
+/* FOUNDER CARD (team page) */
+.founder-wrap{display:flex;justify-content:center;padding:0 24px;margin-bottom:56px;position:relative;z-index:1}
+.founder-card{max-width:380px;width:100%;text-align:center;border-color:var(--gborder)}
+.founder-card .t-avatar{width:104px;height:104px;margin:0 auto 22px}
+.founder-card .t-links{justify-content:center}
+.team-subhead{text-align:center;margin:0 0 30px;position:relative;z-index:1}
+.team-subhead .sec-label{display:block;margin-bottom:8px}
+.team-subhead h3{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--deep)}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1),transform 0.75s cubic-bezier(0.16,1,0.3,1)}
+.reveal.vis{opacity:1;transform:translateY(0)}
+.reveal-l{opacity:0;transform:translateX(-40px);transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1),transform 0.75s cubic-bezier(0.16,1,0.3,1)}
+.reveal-l.vis{opacity:1;transform:translateX(0)}
+.reveal-r{opacity:0;transform:translateX(40px);transition:opacity 0.75s cubic-bezier(0.16,1,0.3,1),transform 0.75s cubic-bezier(0.16,1,0.3,1)}
+.reveal-r.vis{opacity:1;transform:translateX(0)}
+.d1{transition-delay:0.07s}.d2{transition-delay:0.14s}.d3{transition-delay:0.21s}.d4{transition-delay:0.28s}.d5{transition-delay:0.35s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* FOOTER */
+footer{position:relative;z-index:1;border-top:1.5px solid var(--border);padding:40px 48px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;background:var(--surface)}
+.f-logo{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:3px;color:var(--blue)}
+footer p{font-size:13px;color:var(--muted)}
+
+/* MEDIA QUERIES & RESPONSIVE MOBILE NAVIGATION */
+@media(max-width:768px){
+  nav{padding:0 20px}
+  .nav-toggle{display:flex}
+  .nav-links{
+    position:fixed;
+    top:66px;
+    left:0;
+    right:0;
+    background:rgba(245,246,238,0.98);
+    backdrop-filter:blur(24px);
+    border-bottom:1.5px solid var(--border);
+    flex-direction:column;
+    padding:24px 20px;
+    gap:10px;
+    transform:translateY(-150%);
+    opacity:0;
+    pointer-events:none;
+    transition:all 0.35s cubic-bezier(0.16,1,0.3,1);
+    box-shadow:0 16px 40px rgba(15,32,87,0.15);
+  }
+  .nav-links.open{
+    transform:translateY(0);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .nav-links a{
+    width:100%;
+    text-align:center;
+    padding:12px 18px;
+    font-size:15px;
+  }
+  .nav-links .reg{
+    margin-top:6px;
+    display:block;
+    width:100%;
+  }
+  .hero-sub{font-size:17px;margin:24px auto 36px}
+  .hero-stats{gap:20px}
+  .stat-div{display:none}
+  .mission-grid{grid-template-columns:1fr}
+  .sponsor-strip{padding:28px 20px;flex-direction:column;text-align:center}
+  .sponsor-mark{margin:0 auto}
+  .contact-strip{padding:60px 20px}
+  footer{padding:28px 20px;flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+<div class="bg-blobs">
+  <div class="blob b1"></div><div class="blob b2"></div>
+  <div class="blob b3"></div><div class="blob b4"></div>
+</div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo" onclick="showPage('home')"><img src="images/smc_logo.png" alt="SMC Logo" style="width:28px;height:28px;border-radius:50%;object-fit:cover;"> SMC <span class="logo-badge">SKEWB</span></div>
+  <button class="nav-toggle" id="nav-toggle" onclick="toggleMobileNav()" aria-label="Toggle Navigation">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    <a onclick="showPage('home')" id="nav-home" class="active">Home</a>
+    <a onclick="showPage('team')" id="nav-team">Our Team</a>
+    <a onclick="showPage('youtube')" id="nav-youtube">YouTube</a>
+    <a onclick="showPage('sponsors')" id="nav-sponsors">Sponsors</a>
+    <a onclick="showPage('resources')" id="nav-resources">Resources</a>
+    <a class="reg" href="https://docs.google.com/forms/d/1_TfuJTlCInR5k6jck1kLg_Ycjon4mnoMNF7QmJBb1jE/edit" target="_blank" rel="noopener">Register ↗</a>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="home">
+  <section class="hero">
+    <div class="hero-logo-container">
+      <img src="images/smc_logo.png" alt="Skewb Masters Cup Official Logo" class="hero-logo-img">
+    </div>
+    <div class="hero-badge"><img src="images/smc_logo.png" alt="SMC Logo" style="width:16px;height:16px;border-radius:50%;object-fit:cover;"> <span class="badge-dot"></span>Now Accepting Applications</div>
+    <h1 class="hero-title">
+      <span class="l1">Skewb</span>
+      <span class="l2">Masters</span>
+      <span class="l3">Cup</span>
+    </h1>
+    <p class="hero-sub">The first-ever major <strong>Head-to-Head</strong> tournament for Skewb — 16 of the world's best competing in live-streamed matches with professional commentary.</p>
+    <div class="hero-cta">
+      <a class="btn-p" href="https://docs.google.com/forms/d/1_TfuJTlCInR5k6jck1kLg_Ycjon4mnoMNF7QmJBb1jE/edit" target="_blank" rel="noopener">Apply to Compete</a>
+      <button class="btn-g" onclick="showPage('resources')">Competitor Resources</button>
+    </div>
+    <div class="hero-stats">
+      <div class="h-stat"><div class="val">16</div><div class="lbl">Competitors</div></div>
+      <div class="stat-div"></div>
+      <div class="h-stat"><div class="val">H2H</div><div class="lbl">Format</div></div>
+      <div class="stat-div"></div>
+      <div class="h-stat"><div class="val">2×</div><div class="lbl">Double Elim</div></div>
+      <div class="stat-div"></div>
+      <div class="h-stat"><div class="val">WCA</div><div class="lbl">Standards</div></div>
+    </div>
+    <div class="scroll-hint"><span>Scroll</span><div class="scroll-arrow"></div></div>
+  </section>
+
+  <section class="section">
+    <span class="sec-label reveal">Tournament Format</span>
+    <h2 class="sec-title reveal">Battle of the Best <span class="hy">16</span></h2>
+    <div class="format-grid">
+      <div class="fmt-card reveal d1"><div class="num">16</div><h3>Competitors</h3><p>Top 16 seeded by qualifying Ao12 and official WCA results from around the world.</p></div>
+      <div class="fmt-card reveal d2"><div class="num">H2H</div><h3>Head-to-Head</h3><p>Matches over Discord calls, streamed live to YouTube with commentary and judges.</p></div>
+      <div class="fmt-card reveal d3"><div class="num">2×</div><h3>Double Elim</h3><p>Double elimination bracket — one loss doesn't end your tournament run.</p></div>
+      <div class="fmt-card reveal d4"><div class="num">3·4·5</div><h3>Match Structure</h3><p>First to 3 sets wins. Semis: best of 4. Finals: best of 5. Each set: 3 wins in a row.</p></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <span class="sec-label reveal">Our Mission</span>
+    <h2 class="sec-title reveal">Connecting <span class="hl">Skewbers</span> Worldwide</h2>
+    <div class="mission-grid">
+      <div class="mc reveal-l d1"><span class="mc-lbl">Global Stage</span><p>Bringing competitors and viewers from across the globe into one championship platform — the first of its kind for Skewb.</p></div>
+      <div class="mc reveal-r d1"><span class="mc-lbl">Streamed Live</span><p>Every match is broadcast live with commentators and judges, giving Skewb the professional treatment it deserves.</p></div>
+      <div class="mc reveal-l d2"><span class="mc-lbl">Community-First</span><p>Born from the Skewbers Discord community — accessible, responsive, and built by and for speedcubers.</p></div>
+      <div class="mc reveal-r d2"><span class="mc-lbl">WCA Standard</span><p>WCA rules throughout. Independent referees, official Stackmat timers, and full competitive integrity.</p></div>
+    </div>
+  </section>
+
+  <div class="divider"></div>
+
+  <section class="section">
+    <span class="sec-label reveal">Sponsor</span>
+    <h2 class="sec-title reveal">Backed By <span class="hy">TheCubicle</span></h2>
+    <div class="sponsor-strip reveal">
+      <div class="sponsor-mark">
+        <img src="images/thecubicle_logo.jpg" alt="TheCubicle Logo">
+      </div>
+      <div class="sponsor-body">
+        <span class="mc-lbl">Presenting Sponsor</span>
+        <h3>TheCubicle</h3>
+        <p>TheCubicle is backing the Skewb Masters Cup — helping promote the tournament to the wider cubing community and providing gift card prizes for the top 3 finishers.</p>
+      </div>
+      <div class="sponsor-cta"><button class="btn-g" onclick="showPage('sponsors')">Sponsor Details</button></div>
+    </div>
+  </section>
+
+  <div class="gold-bar"></div>
+
+  <div class="contact-strip">
+    <h2 class="reveal">Questions? We've Got You.</h2>
+    <p class="reveal">Reach out anytime — active on email and Discord.</p>
+    <div class="contact-links reveal">
+      <a href="mailto:cube2ishaank@gmail.com">✉ cube2ishaank@gmail.com</a>
+      <a href="https://discord.gg/skewbers" target="_blank" rel="noopener">⬡ Skewbers Discord</a>
+    </div>
+  </div>
+
+  <footer><div class="f-logo" style="display:flex;align-items:center;gap:8px"><img src="images/smc_logo.png" alt="SMC Logo" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> Skewb Masters Cup</div><p>The first H2H Skewb championship · Online · Global</p></footer>
+</div>
+
+<!-- TEAM -->
+<div class="page" id="team">
+  <div class="page-header">
+    <span class="sec-label">The People</span>
+    <h2 class="sec-title">Our <span class="hy">Team</span></h2>
+    <p>Founded by one skewber, built with the help of many more.</p>
+  </div>
+
+  <div class="founder-wrap">
+    <div class="team-card founder-card reveal">
+      <div class="t-avatar">
+        <div class="t-av-bg" style="background:linear-gradient(135deg,#1a56db,#f5b800)">IB</div>
+        <img class="t-av-img" src="images/ishaank_bansal.jpg" alt="Ishaank Bansal">
+      </div>
+      <div class="t-role">Founder</div>
+      <div class="t-name">Ishaank Bansal</div>
+      <p class="t-desc">Founder and tournament director for the Skewb Masters Cup. Dedicated to creating the ultimate Head-to-Head competitive platform for speedcubers worldwide.</p>
+      <div class="t-links">
+        <a class="t-link" href="https://www.worldcubeassociation.org/persons/2025BANS01" target="_blank" rel="noopener">🏆 WCA</a>
+        <a class="t-link yt" href="https://www.youtube.com/@Cube2Ishaank" target="_blank" rel="noopener">▶ YouTube</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="team-subhead">
+    <span class="sec-label">The Rest of the Crew</span>
+    <h3>Contributors</h3>
+  </div>
+  <div class="team-grid">
+
+    <div class="team-card reveal d2">
+      <div class="t-avatar">
+        <div class="t-av-bg" style="background:linear-gradient(135deg,#3b82f6,#f5b800)">JL</div>
+        <img class="t-av-img" src="images/jacob_levie.jpg" alt="Jacob Levie">
+      </div>
+      <div class="t-role">Contributor</div>
+      <div class="t-name">Jacob Levie</div>
+      <p class="t-desc">Speedcuber and community organizer helping streamline tournament operations, regulations, and competitor support.</p>
+      <div class="t-links">
+        <a class="t-link" href="https://www.worldcubeassociation.org/persons/2022LEVI06" target="_blank" rel="noopener">🏆 WCA</a>
+        <a class="t-link yt" href="https://www.youtube.com/@jacoblevie" target="_blank" rel="noopener">▶ YouTube</a>
+      </div>
+    </div>
+
+    <div class="team-card reveal d3">
+      <div class="t-avatar">
+        <div class="t-av-bg" style="background:linear-gradient(135deg,#0ea5e9,#f5b800)">MD</div>
+        <img class="t-av-img" src="images/michal_denkiewicz.jpg" alt="Michał Denkiewicz">
+      </div>
+      <div class="t-role">Contributor</div>
+      <div class="t-name">Michał Denkiewicz</div>
+      <p class="t-desc">Competitive skewber and contributor assisting with tournament format structure, rules verification, and event logistics.</p>
+      <div class="t-links">
+        <a class="t-link" href="https://www.worldcubeassociation.org/persons/2021DENK01" target="_blank" rel="noopener">🏆 WCA</a>
+        <a class="t-link yt" href="https://www.youtube.com/@michadenkiewicz8555" target="_blank" rel="noopener">▶ YouTube</a>
+      </div>
+    </div>
+
+    <div class="team-card reveal d4">
+      <div class="t-avatar">
+        <div class="t-av-bg" style="background:linear-gradient(135deg,#06b6d4,#f5b800)">DR</div>
+        <img class="t-av-img" src="images/dominic_redisi.jpg" alt="Dominic Redisi">
+      </div>
+      <div class="t-role">Contributor</div>
+      <div class="t-name">Dominic Redisi</div>
+      <p class="t-desc">Avid speedcuber helping manage bracket administration, stream production, and competitor relations.</p>
+      <div class="t-links">
+        <a class="t-link" href="https://www.worldcubeassociation.org/persons/2019REDI02" target="_blank" rel="noopener">🏆 WCA</a>
+        <a class="t-link yt" href="https://www.youtube.com/@domrred" target="_blank" rel="noopener">▶ YouTube</a>
+      </div>
+    </div>
+
+    <div class="team-card reveal d5">
+      <div class="t-avatar">
+        <div class="t-av-bg" style="background:linear-gradient(135deg,#6366f1,#f5b800)">WK</div>
+        <img class="t-av-img" src="images/will_klauer.jpg" alt="Will Klauer">
+      </div>
+      <div class="t-role">Contributor</div>
+      <div class="t-name">Will Klauer</div>
+      <p class="t-desc">Experienced cuber and content creator contributing to broadcast commentary, media coverage, and community outreach.</p>
+      <div class="t-links">
+        <a class="t-link" href="https://www.worldcubeassociation.org/persons/2017KLAU01" target="_blank" rel="noopener">🏆 WCA</a>
+        <a class="t-link yt" href="https://www.youtube.com/cubeology" target="_blank" rel="noopener">▶ YouTube</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="gold-bar"></div>
+  <footer><div class="f-logo" style="display:flex;align-items:center;gap:8px"><img src="images/smc_logo.png" alt="SMC Logo" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> Skewb Masters Cup</div><p>The first H2H Skewb championship · Online · Global</p></footer>
+</div>
+
+<!-- YOUTUBE -->
+<div class="page" id="youtube">
+  <div class="page-header">
+    <span class="sec-label">Broadcast</span>
+    <h2 class="sec-title">YouTube <span class="hy">Channel</span></h2>
+    <p>Live matches, highlights, and post-match interviews — all on YouTube.</p>
+  </div>
+  <div class="yt-section">
+    <div class="yt-hero reveal">
+      <div class="yt-icon-wrap">
+        <img src="images/smc_logo.png" alt="SMC Logo">
+      </div>
+      <h2>Skewb Masters Cup</h2>
+      <p>Every match is streamed live and archived. Full commentary, judge decisions, bracket coverage, and competitor interviews — all in one place.</p>
+      <a class="btn-yt" href="https://www.youtube.com/@skewbmastercup" target="_blank" rel="noopener">Watch on YouTube ↗</a>
+    </div>
+    <div style="margin:48px 0 22px">
+      <span class="sec-label" style="display:block;text-align:center">Staff Channels</span>
+      <h3 class="reveal" style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;text-align:center;color:var(--deep);margin-bottom:26px">The Team's Channels</h3>
+    </div>
+    <div class="ch-grid">
+
+      <a class="ch-card reveal d1" href="https://www.youtube.com/@Cube2Ishaank" target="_blank" rel="noopener">
+        <div class="ch-av">
+          <div class="ch-av-bg" style="background:linear-gradient(135deg,#1a56db,#f5b800)">IB</div>
+          <img class="ch-av-img" src="images/ishaank_bansal.jpg" alt="Ishaank Bansal">
+        </div>
+        <strong>Ishaank Bansal</strong><span>@Cube2Ishaank</span>
+      </a>
+
+      <a class="ch-card reveal d2" href="https://www.youtube.com/@jacoblevie" target="_blank" rel="noopener">
+        <div class="ch-av">
+          <div class="ch-av-bg" style="background:linear-gradient(135deg,#3b82f6,#f5b800)">JL</div>
+          <img class="ch-av-img" src="images/jacob_levie.jpg" alt="Jacob Levie">
+        </div>
+        <strong>Jacob Levie</strong><span>@jacoblevie</span>
+      </a>
+
+      <a class="ch-card reveal d3" href="https://www.youtube.com/@michadenkiewicz8555" target="_blank" rel="noopener">
+        <div class="ch-av">
+          <div class="ch-av-bg" style="background:linear-gradient(135deg,#0ea5e9,#f5b800)">MD</div>
+          <img class="ch-av-img" src="images/michal_denkiewicz.jpg" alt="Michał Denkiewicz">
+        </div>
+        <strong>Michał Denkiewicz</strong><span>@michadenkiewicz8555</span>
+      </a>
+
+      <a class="ch-card reveal d4" href="https://www.youtube.com/@domrred" target="_blank" rel="noopener">
+        <div class="ch-av">
+          <div class="ch-av-bg" style="background:linear-gradient(135deg,#06b6d4,#f5b800)">DR</div>
+          <img class="ch-av-img" src="images/dominic_redisi.jpg" alt="Dominic Redisi">
+        </div>
+        <strong>Dominic Redisi</strong><span>@domrred</span>
+      </a>
+
+      <a class="ch-card reveal d5" href="https://www.youtube.com/cubeology" target="_blank" rel="noopener">
+        <div class="ch-av">
+          <div class="ch-av-bg" style="background:linear-gradient(135deg,#6366f1,#f5b800)">WK</div>
+          <img class="ch-av-img" src="images/will_klauer.jpg" alt="Will Klauer">
+        </div>
+        <strong>Will Klauer</strong><span>cubeology</span>
+      </a>
+
+    </div>
+  </div>
+  <div class="gold-bar"></div>
+  <footer><div class="f-logo" style="display:flex;align-items:center;gap:8px"><img src="images/smc_logo.png" alt="SMC Logo" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> Skewb Masters Cup</div><p>The first H2H Skewb championship · Online · Global</p></footer>
+</div>
+
+<!-- RESOURCES -->
+<div class="page" id="resources">
+  <div class="page-header">
+    <span class="sec-label">Competitor Resources</span>
+    <h2 class="sec-title">Everything You <span class="hy">Need</span></h2>
+    <p>Read through before applying. Sections are updated as new topics arise.</p>
+  </div>
+  <div class="res-layout">
+    <div class="res-tabs">
+      <button class="tab-btn active" onclick="switchTab('rules',this)">Rules & Format</button>
+      <button class="tab-btn" onclick="switchTab('camera',this)">Camera & Recording</button>
+      <button class="tab-btn" onclick="switchTab('hardware',this)">Hardware</button>
+      <button class="tab-btn" onclick="switchTab('overview',this)">Overview</button>
+    </div>
+
+    <div class="tab-panel active" id="tab-rules">
+      <div class="rule-block reveal"><h3>Match Format</h3><p>First to 3 wins in a row takes a set. First to 3 sets wins the match. Semi-finals: first to 4 sets. Finals: first to 5 sets.</p><ul><li>Matches held over Discord calls, streamed live to YouTube</li><li>You must provide your own judge to time inspection (visible to camera)</li><li>Double elimination bracket — 16 contestants seeded by qualifying Ao12 and WCA results</li><li>A coin toss determines who starts the first set; sets alternate after that</li></ul></div>
+      <div class="rule-block gold reveal d1"><h3>During a Solve</h3><p>After a scramble, players must immediately cover the cube with a lid. A volunteer judge sends the scramble via private message, verifies it, measures inspection, checks correctness, and records the score.</p><ul><li>Inspection is measured from when the lid is removed until hands leave the timer</li><li>You may measure inspection yourself via cable/Bluetooth — start before uncovering</li><li>Inspection time must remain visible to the camera at all times</li><li>A two-handed timer is permitted (not from a phone or computer)</li></ul></div>
+      <div class="rule-block reveal d2"><h3>Disputes & Judgement</h3><p>When the referee disagrees with a player, the final decision is consulted with an independent referee familiar with WCA rules who is not participating.</p><ul><li>Discussion with judge/organizer is allowed but doesn't guarantee a reversal</li><li>If a judge error occurs, the routine is repeated for both competitors</li><li>WCA rules apply wherever possible unless otherwise stated here</li></ul></div>
+      <div class="rule-block gold reveal d3"><h3>Scheduling & Attendance</h3><ul><li>Match dates are agreed upon via private message</li><li>Each competitor must acknowledge the match may be commented on or streamed</li><li>No-show or departure results in DNS records from the moment of absence</li><li>The other competitor may, but is not obligated to, continue their routine</li></ul></div>
+      <div class="rule-block reveal d4"><h3>Equipment & Conduct</h3><ul><li>Any equipment or connection fault is the competitor's own responsibility</li><li>Attempting to circumvent rules results in immediate disqualification</li><li>Disrespecting or disrupting another competitor results in disqualification</li><li>The organizer reserves the right to add rules at any time</li></ul></div>
+    </div>
+
+    <div class="tab-panel" id="tab-camera">
+      <div class="rule-block reveal"><h3>Camera Setup</h3><ul><li>We encourage an over-the-shoulder view of your solves</li><li>Make sure your setup is sturdy — a falling camera is not grounds for a re-solve</li><li>The camera must focus on the cube and keep it clearly visible throughout</li><li>Do not stop mid-solve to adjust the camera — this results in an immediate DNF</li></ul></div>
+      <div class="rule-block gold reveal d1"><h3>Post-Match & Integrity</h3><ul><li>After the matchup, a camera facing you may be needed for a post-match interview</li></ul><div class="note-box"><p>⚠ There must be absolutely no editing or cuts in any recordings. Unedited, continuous footage only.</p></div></div>
+    </div>
+
+    <div class="tab-panel" id="tab-hardware">
+      <div class="rule-block reveal"><h3>Cube Choice</h3><p>You may use any Skewb of your choice. Lubrication and modification are permitted as long as the cube remains WCA legal. Unsure? Contact us and we'll verify.</p></div>
+      <div class="rule-block gold reveal d1"><h3>Lubrication & Swapping</h3><ul><li>You may NOT lubricate or adjust mid-set</li><li>Lubrication is allowed between sets</li><li>You may change your Skewb after every solve</li></ul><div class="note-box"><p>⚠ Exception: If your Skewb breaks (not pops) mid-round and cannot be turned, you may switch cubes.</p></div></div>
+      <div class="rule-block reveal d2"><h3>Timers</h3><p>We strongly encourage official Stackmat timers used in current WCA competitions. Alternatives must function similarly.</p><div class="note-box"><p>⚠ Timer software applications are NOT allowed under any circumstances.</p></div></div>
+      <div class="rule-block gold reveal d3"><h3>Mats & Cameras</h3><ul><li>Cubing mats are required — ensures fairness and prevents hardware damage</li><li>Any camera that works for your setup is allowed; GoPros are recommended</li><li>A screen must NOT face you during solves to prevent unfair advantages</li></ul></div>
+    </div>
+
+    <div class="tab-panel" id="tab-overview">
+      <div class="rule-block reveal"><h3>About This Section</h3><p>This section covers topics we ask all competitors to read through before the tournament. Applicants should also be familiar with this content before registering.</p><p style="margin-top:12px">New sections are added as new topics arise. The goal is to give every competitor equal access to the information they need to perform their best.</p></div>
+      <div class="rule-block gold reveal d1"><h3>Contact Us</h3><p>Reach out if you think a topic should be added or have any questions.</p><ul><li>Email: <a href="mailto:cube2ishaank@gmail.com" style="color:var(--gold2);font-weight:600">cube2ishaank@gmail.com</a></li><li>Discord: Ping any Staff member in the Skewbers server</li></ul></div>
+    </div>
+  </div>
+  <div class="gold-bar"></div>
+  <footer><div class="f-logo" style="display:flex;align-items:center;gap:8px"><img src="images/smc_logo.png" alt="SMC Logo" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> Skewb Masters Cup</div><p>The first H2H Skewb championship · Online · Global</p></footer>
+</div>
+
+<!-- SPONSORS -->
+<div class="page" id="sponsors">
+  <div class="page-header">
+    <span class="sec-label">Presenting Sponsor</span>
+    <h2 class="sec-title">Powered By <span class="hy">TheCubicle</span></h2>
+    <p>TheCubicle is sponsoring the Skewb Masters Cup and helping bring it to the wider cubing community.</p>
+  </div>
+  <div class="yt-section">
+    <div class="yt-hero reveal">
+      <div class="yt-icon-wrap">
+        <img src="images/thecubicle_logo.jpg" alt="TheCubicle Logo">
+      </div>
+      <h2>TheCubicle</h2>
+      <p>TheCubicle is a leading speedcubing retailer and a trusted name across the WCA community. They're promoting the Skewb Masters Cup to their audience and putting up gift card prizes for the top 3 finishers.</p>
+      <a class="btn-yt" href="https://www.thecubicle.com" target="_blank" rel="noopener">Visit TheCubicle ↗</a>
+    </div>
+
+    <div style="margin:48px 0 22px">
+      <span class="sec-label" style="display:block;text-align:center">Top 3 Prizes</span>
+      <h3 class="reveal" style="font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;text-align:center;color:var(--deep);margin-bottom:26px">TheCubicle Gift Cards</h3>
+    </div>
+    <div class="prize-grid">
+      <div class="prize-card first reveal d1"><div class="place">1st Place</div><div class="amt">$50</div><p>TheCubicle gift card</p></div>
+      <div class="prize-card reveal d2"><div class="place">2nd Place</div><div class="amt">$40</div><p>TheCubicle gift card</p></div>
+      <div class="prize-card reveal d3"><div class="place">3rd Place</div><div class="amt">$30</div><p>TheCubicle gift card</p></div>
+    </div>
+    <div class="rule-block gold reveal d4" style="text-align:left;margin-top:16px">
+      <h3>About the Prizes</h3>
+      <p>Gift cards are provided directly by TheCubicle and awarded to the top 3 finishers of the double elimination bracket once the tournament concludes.</p>
+    </div>
+  </div>
+  <div class="gold-bar"></div>
+  <footer><div class="f-logo" style="display:flex;align-items:center;gap:8px"><img src="images/smc_logo.png" alt="SMC Logo" style="width:24px;height:24px;border-radius:50%;object-fit:cover;"> Skewb Masters Cup</div><p>The first H2H Skewb championship · Online · Global</p></footer>
+</div>
+
+<script>
+/* MOBILE NAV TOGGLE */
+function toggleMobileNav() {
+  const links = document.getElementById('nav-links');
+  const btn = document.getElementById('nav-toggle');
+  links.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+
+/* PAGE ROUTING */
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.nav-links a[id^="nav-"]').forEach(a => a.classList.remove('active'));
+  const n = document.getElementById('nav-' + id);
+  if (n) n.classList.add('active');
+  
+  /* Close mobile menu if open */
+  const links = document.getElementById('nav-links');
+  const btn = document.getElementById('nav-toggle');
+  if (links) links.classList.remove('open');
+  if (btn) btn.classList.remove('open');
+
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  setTimeout(runReveal, 80);
+}
+
+/* TABS */
+function switchTab(id, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  btn.classList.add('active');
+  setTimeout(runReveal, 80);
+}
+
+/* SCROLL REVEAL */
+const seen = new WeakSet();
+function runReveal() {
+  const active = document.querySelector('.page.active');
+  if (!active) return;
+  const els = active.querySelectorAll('.reveal,.reveal-l,.reveal-r');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting && !seen.has(e.target)) {
+        seen.add(e.target);
+        e.target.classList.add('vis');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -28px 0px' });
+  els.forEach(el => {
+    if (seen.has(el)) el.classList.add('vis');
+    else obs.observe(el);
+  });
+}
+runReveal();
+window.addEventListener('scroll', runReveal, { passive: true });
+
+/* SCROLL PROGRESS BAR */
+const bar = document.getElementById('progress');
+function updateProgress() {
+  const docH = document.documentElement.scrollHeight - window.innerHeight;
+  bar.style.width = (docH > 0 ? (window.scrollY / docH) * 100 : 0) + '%';
+}
+window.addEventListener('scroll', updateProgress, { passive: true });
+
+/* NAVBAR */
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+/* AVATAR FALLBACK: initials always visible; image fades in on successful load */
+function initAvatars() {
+  document.querySelectorAll('.t-av-img, .ch-av-img').forEach(img => {
+    const onLoad = () => img.classList.add('loaded');
+    const onError = () => { img.style.display = 'none'; };
+    if (img.complete) {
+      if (img.naturalWidth > 0) onLoad(); else onError();
+    } else {
+      img.addEventListener('load', onLoad);
+      img.addEventListener('error', onError);
+    }
+  });
+}
+initAvatars();
+</script>
+</body>
+</html>
